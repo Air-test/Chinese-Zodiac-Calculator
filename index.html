@@ -6,49 +6,247 @@
     <title>Chinese Zodiac Calculator</title>
     <script src="https://cdn.jsdelivr.net/npm/suncalc@1.8.0/suncalc.js"></script>
     <style>
-        /* (Keep existing CSS styles the same) */
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            background: #f8f9fa;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        input[type="date"] {
+            flex: 1;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        button {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: opacity 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .result {
+            display: none;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .zodiac-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .compatibility {
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- (Keep existing HTML structure the same) -->
+    <div class="container">
+        <h1>Chinese Zodiac Calculator</h1>
+        
+        <div class="input-group">
+            <input type="date" id="birthdate" required>
+            <button onclick="calculateZodiac()">Get Zodiac</button>
+        </div>
+
+        <div class="result" id="result">
+            <h2 id="zodiac-title"></h2>
+            <div class="zodiac-info">
+                <div>
+                    <p><strong>Year of:</strong> <span id="zodiac-animal"></span></p>
+                    <p><strong>Chinese Name:</strong> <span id="zodiac-chinese"></span></p>
+                </div>
+                <div class="compatibility">
+                    <p><strong>Best Matches:</strong> <span id="best-matches"></span></p>
+                    <p><strong>Good Matches:</strong> <span id="good-matches"></span></p>
+                    <p><strong>Avoid:</strong> <span id="avoid-matches"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // (Keep zodiacData object the same)
+        const zodiacData = {
+            rat: {
+                order: 1,
+                chinese: '鼠 (Shǔ)',
+                best: ['Dragon', 'Monkey'],
+                good: ['Ox', 'Tiger', 'Rabbit', 'Snake', 'Dog', 'Pig'],
+                avoid: ['Horse', 'Goat']
+            },
+            ox: {
+                order: 2,
+                chinese: '牛 (Niú)',
+                best: ['Snake', 'Rooster'],
+                good: ['Rat', 'Tiger', 'Rabbit', 'Dragon', 'Monkey', 'Pig'],
+                avoid: ['Sheep', 'Horse', 'Dog']
+            },
+            tiger: {
+                order: 3,
+                chinese: '虎 (Hǔ)',
+                best: ['Horse', 'Dog'],
+                good: ['Rat', 'Ox', 'Rabbit', 'Dragon', 'Snake', 'Sheep', 'Monkey', 'Pig'],
+                avoid: ['Monkey']
+            },
+            rabbit: {
+                order: 4,
+                chinese: '兔 (Tù)',
+                best: ['Sheep', 'Pig'],
+                good: ['Rat', 'Ox', 'Tiger', 'Dragon', 'Snake', 'Dog'],
+                avoid: ['Rooster']
+            },
+            dragon: {
+                order: 5,
+                chinese: '龙 (Lóng)',
+                best: ['Rat', 'Monkey'],
+                good: ['Tiger', 'Rabbit', 'Snake', 'Horse', 'Sheep', 'Rooster', 'Dog', 'Pig'],
+                avoid: ['Dog']
+            },
+            snake: {
+                order: 6,
+                chinese: '蛇 (Shé)',
+                best: ['Ox', 'Rooster'],
+                good: ['Rat', 'Tiger', 'Rabbit', 'Dragon', 'Horse', 'Sheep', 'Dog', 'Pig'],
+                avoid: ['Pig']
+            },
+            horse: {
+                order: 7,
+                chinese: '马 (Mǎ)',
+                best: ['Tiger', 'Dog'],
+                good: ['Dragon', 'Snake', 'Sheep', 'Monkey', 'Rooster', 'Pig'],
+                avoid: ['Rat', 'Ox', 'Rabbit']
+            },
+            goat: {
+                order: 8,
+                chinese: '羊 (Yáng)',
+                best: ['Rabbit', 'Pig'],
+                good: ['Tiger', 'Dragon', 'Snake', 'Horse', 'Monkey', 'Rooster', 'Dog'],
+                avoid: ['Ox', 'Rat']
+            },
+            monkey: {
+                order: 9,
+                chinese: '猴 (Hóu)',
+                best: ['Rat', 'Dragon'],
+                good: ['Ox', 'Tiger', 'Rabbit', 'Snake', 'Horse', 'Sheep', 'Dog', 'Pig'],
+                avoid: ['Tiger']
+            },
+            rooster: {
+                order: 10,
+                chinese: '鸡 (Jī)',
+                best: ['Ox', 'Snake'],
+                good: ['Tiger', 'Rabbit', 'Dragon', 'Horse', 'Sheep', 'Monkey', 'Dog', 'Pig'],
+                avoid: ['Rabbit']
+            },
+            dog: {
+                order: 11,
+                chinese: '狗 (Gǒu)',
+                best: ['Tiger', 'Horse'],
+                good: ['Rat', 'Rabbit', 'Dragon', 'Snake', 'Sheep', 'Monkey', 'Rooster', 'Pig'],
+                avoid: ['Dragon', 'Ox', 'Sheep']
+            },
+            pig: {
+                order: 12,
+                chinese: '猪 (Zhū)',
+                best: ['Rabbit', 'Sheep'],
+                good: ['Rat', 'Ox', 'Tiger', 'Dragon', 'Snake', 'Monkey', 'Rooster', 'Dog'],
+                avoid: ['Snake']
+            }
+        };
 
         function getLunarNewYear(targetYear) {
-            // Get December solstice of previous year
-            const solsticeDate = SunCalc.getTimes(new Date(targetYear - 1, 11, 22), 0, 0).decSolstice;
+            // Convert to UTC+8 (China Standard Time)
+            const utcOffset = 8 * 60 * 60 * 1000;
+            
+            // Find December solstice of previous year in UTC+8
+            const decSolstice = SunCalc.getTimes(new Date(Date.UTC(targetYear - 1, 11, 22)), 0, 0).decSolstice;
+            let date = new Date(decSolstice.getTime() + utcOffset);
             
             // Find subsequent new moons
             let newMoonCount = 0;
-            let date = new Date(solsticeDate);
             let lunarNewYear = null;
             
             while (newMoonCount < 2) {
                 date.setDate(date.getDate() + 1);
-                const phase = SunCalc.getMoonIllumination(date).phase;
-                if (phase < 0.01) { // New moon detection
+                const moonIllumination = SunCalc.getMoonIllumination(date);
+                if (moonIllumination.phase < 0.01) {
                     newMoonCount++;
                     if (newMoonCount === 2) {
                         lunarNewYear = new Date(date);
-                        // Adjust for traditional lunisolar rules
-                        const feb4 = new Date(targetYear, 1, 4);
+                        // Adjust for Lichun (Feb 4th) rule
+                        const feb4 = new Date(Date.UTC(targetYear, 0, 4 + 31)); // February 4th UTC+8
                         if (lunarNewYear > feb4) {
                             lunarNewYear.setMonth(lunarNewYear.getMonth() - 1);
                         }
                     }
                 }
             }
+            
+            // Reset time components
+            lunarNewYear.setHours(0, 0, 0, 0);
             return lunarNewYear;
         }
 
         function getZodiac(inputDate) {
-            const gregorianYear = inputDate.getFullYear();
-            const lunarNewYear = getLunarNewYear(gregorianYear);
-            const zodiacYear = inputDate < lunarNewYear ? gregorianYear - 1 : gregorianYear;
+            // Convert input to UTC+8
+            const utc8Date = new Date(inputDate.getTime() + (8 * 60 * 60 * 1000));
+            const gregorianYear = utc8Date.getUTCFullYear();
             
-            // Adjust for 12-year cycle starting from 1984 (Rat year)
+            const lunarNewYear = getLunarNewYear(gregorianYear);
+            const zodiacYear = utc8Date < lunarNewYear ? gregorianYear - 1 : gregorianYear;
+            
+            // Calculate zodiac index (1984 was Rat year)
             const zodiacIndex = (zodiacYear - 1984) % 12;
-            return Object.values(zodiacData)[zodiacIndex < 0 ? 12 + zodiacIndex : zodiacIndex];
+            return Object.values(zodiacData)[
+                zodiacIndex >= 0 ? zodiacIndex : 12 + zodiacIndex
+            ];
         }
 
         function calculateZodiac() {
@@ -57,8 +255,16 @@
             
             const date = new Date(dateInput);
             const zodiac = getZodiac(date);
-            
-            // (Keep existing result display code the same)
+            const zodiacYear = date.getFullYear() - (date < getLunarNewYear(date.getFullYear()) ? 1 : 0);
+
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('zodiac-title').textContent = `Chinese Zodiac: ${zodiacYear}`;
+            document.getElementById('zodiac-animal').textContent = 
+                Object.keys(zodiacData).find(key => zodiacData[key] === zodiac).toUpperCase();
+            document.getElementById('zodiac-chinese').textContent = zodiac.chinese;
+            document.getElementById('best-matches').textContent = zodiac.best.join(', ');
+            document.getElementById('good-matches').textContent = zodiac.good.join(', ');
+            document.getElementById('avoid-matches').textContent = zodiac.avoid.join(', ');
         }
     </script>
 </body>
