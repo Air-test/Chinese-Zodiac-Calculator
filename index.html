@@ -275,45 +275,6 @@ function getZodiac(inputDate) {
     const zodiacIndex = ((zodiacYear - baseYear) % 12 + 12) % 12;
     return Object.values(zodiacData)[zodiacIndex];
 }
-
-        function calculateZodiac() {
-            try {
-                const dateInput = document.getElementById('birthdate').value;
-                if (!dateInput) {
-                    alert('Please select a date');
-                    return;
-                }
-
-                const date = new Date(dateInput);
-                const zodiac = getZodiac(date);
-                const lunarNewYear = getLunarNewYear(date.getFullYear());
-                const zodiacYear = date < lunarNewYear ? date.getFullYear() - 1 : date.getFullYear();
-
-                const resultDiv = document.getElementById('result');
-                resultDiv.style.display = 'block';
-                document.getElementById('zodiac-title').textContent = `Chinese Zodiac: ${zodiacYear}`;
-                
-                const animalKey = Object.keys(zodiacData).find(key => 
-                    zodiacData[key].order === zodiac.order
-                );
-                
-                document.getElementById('zodiac-animal').textContent = animalKey.toUpperCase();
-                document.getElementById('zodiac-chinese').textContent = zodiac.chinese;
-                document.getElementById('best-matches').textContent = zodiac.best.join(', ');
-                document.getElementById('good-matches').textContent = zodiac.good.join(', ');
-                document.getElementById('avoid-matches').textContent = zodiac.avoid.join(', ');
-
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error calculating zodiac. Please try again.');
-            }
-        }
-
-        // Form submission handler
-        document.getElementById('zodiacForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            calculateZodiac();
-        });
     </script>
 </body>
 </html>
