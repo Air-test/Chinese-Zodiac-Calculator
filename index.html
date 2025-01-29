@@ -372,7 +372,93 @@
             chineseNewYears = {...presetDates, ...chineseNewYears};
             localStorage.setItem(STORAGE_KEY, JSON.stringify(chineseNewYears));
         };
-
+const zodiacData = [
+    { // 0 - Rata (Años: 1900, 1912, 1924...)
+        animal: 'Rata',
+        chinese: '鼠 (Shǔ)',
+        best: ['Dragón', 'Mono'],
+        good: ['Buey', 'Tigre', 'Conejo', 'Serpiente', 'Perro', 'Cerdo'],
+        avoid: ['Caballo', 'Cabra']
+    },
+    { // 1 - Buey
+        animal: 'Buey',
+        chinese: '牛 (Niú)',
+        best: ['Serpiente', 'Gallo'],
+        good: ['Rata', 'Tigre', 'Conejo', 'Dragón', 'Mono', 'Cerdo'],
+        avoid: ['Cabra', 'Caballo', 'Perro']
+    },
+    { // 2 - Tigre
+        animal: 'Tigre',
+        chinese: '虎 (Hǔ)',
+        best: ['Caballo', 'Perro'],
+        good: ['Rata', 'Buey', 'Conejo', 'Dragón', 'Serpiente', 'Cabra', 'Mono', 'Cerdo'],
+        avoid: ['Mono']
+    },
+    { // 3 - Conejo
+        animal: 'Conejo',
+        chinese: '兔 (Tù)',
+        best: ['Cabra', 'Cerdo'],
+        good: ['Rata', 'Buey', 'Tigre', 'Dragón', 'Serpiente', 'Perro'],
+        avoid: ['Gallo']
+    },
+    { // 4 - Dragón
+        animal: 'Dragón',
+        chinese: '龙 (Lóng)',
+        best: ['Rata', 'Mono'],
+        good: ['Tigre', 'Conejo', 'Serpiente', 'Caballo', 'Cabra', 'Gallo', 'Perro', 'Cerdo'],
+        avoid: ['Perro']
+    },
+    { // 5 - Serpiente
+        animal: 'Serpiente',
+        chinese: '蛇 (Shé)',
+        best: ['Buey', 'Gallo'],
+        good: ['Rata', 'Tigre', 'Conejo', 'Dragón', 'Caballo', 'Cabra', 'Perro', 'Cerdo'],
+        avoid: ['Cerdo']
+    },
+    { // 6 - Caballo
+        animal: 'Caballo',
+        chinese: '马 (Mǎ)',
+        best: ['Tigre', 'Perro'],
+        good: ['Dragón', 'Serpiente', 'Cabra', 'Mono', 'Gallo', 'Cerdo'],
+        avoid: ['Rata', 'Buey', 'Conejo']
+    },
+    { // 7 - Cabra
+        animal: 'Cabra',
+        chinese: '羊 (Yáng)',
+        best: ['Conejo', 'Cerdo'],
+        good: ['Tigre', 'Dragón', 'Serpiente', 'Caballo', 'Mono', 'Gallo', 'Perro'],
+        avoid: ['Buey', 'Rata']
+    },
+    { // 8 - Mono
+        animal: 'Mono',
+        chinese: '猴 (Hóu)',
+        best: ['Rata', 'Dragón'],
+        good: ['Buey', 'Tigre', 'Conejo', 'Serpiente', 'Caballo', 'Cabra', 'Perro', 'Cerdo'],
+        avoid: ['Tigre']
+    },
+    { // 9 - Gallo
+        animal: 'Gallo',
+        chinese: '鸡 (Jī)',
+        best: ['Buey', 'Serpiente'],
+        good: ['Tigre', 'Conejo', 'Dragón', 'Caballo', 'Cabra', 'Mono', 'Perro', 'Cerdo'],
+        avoid: ['Conejo']
+    },
+    { // 10 - Perro
+        animal: 'Perro',
+        chinese: '狗 (Gǒu)',
+        best: ['Tigre', 'Caballo'],
+        good: ['Rata', 'Conejo', 'Dragón', 'Serpiente', 'Cabra', 'Mono', 'Gallo', 'Cerdo'],
+        avoid: ['Dragón', 'Buey', 'Cabra']
+    },
+    { // 11 - Cerdo
+        animal: 'Cerdo',
+        chinese: '猪 (Zhū)',
+        best: ['Conejo', 'Cabra'],
+        good: ['Rata', 'Buey', 'Tigre', 'Dragón', 'Serpiente', 'Mono', 'Gallo', 'Perro'],
+        avoid: ['Serpiente']
+    }
+];
+        
         // 3. Sistema de auto-actualización
         const estimateChineseNewYear = (year) => {
             // Algoritmo aproximado basado en ciclos lunares
@@ -387,20 +473,21 @@
         };
 
         // 4. Datos del zodíaco mejorados
-        const zodiacData = [
-            { animal: 'Rata', chinese: '鼠 (Shǔ)', best: ['Dragón', 'Mono'], good: ['Buey', 'Tigre', 'Conejo', 'Serpiente', 'Perro', 'Cerdo'], avoid: ['Caballo', 'Cabra'] },
-            { animal: 'Buey', chinese: '牛 (Niú)', best: ['Serpiente', 'Gallo'], good: ['Rata', 'Tigre', 'Conejo', 'Dragón', 'Mono', 'Cerdo'], avoid: ['Cabra', 'Caballo', 'Perro'] },
-            // ... (completar otros 10 animales)
-        ];
+        const getZodiac = (date) => {
+    const year = date.getFullYear();
+    const cnYearDate = new Date(chineseNewYears[year]);
+    const zodiacYear = date < cnYearDate ? year - 1 : year;
+    
+    // Fórmula verificada
+    const zodiacIndex = (zodiacYear - 1900) % 12; // 1900 fue año de la Rata (índice 0)
+    return zodiacData[zodiacIndex >= 0 ? zodiacIndex : 12 + zodiacIndex];
+};
+
 
         // 5. Núcleo de cálculo mejorado
         const getZodiac = (date) => {
             const year = date.getFullYear();
             
-            // Validación de año soportado
-            if(year < 1900 || year > 2100) {
-                throw new Error('Año fuera de rango (1900-2100)');
-            }
 
             // Obtener o estimar año nuevo chino
             let cnDate = chineseNewYears[year] ? 
