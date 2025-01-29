@@ -203,31 +203,52 @@
         };
 
         function getLunarNewYear(targetYear) {
-            const utcOffset = 8 * 60 * 60 * 1000; // UTC+8 offset
-            const decSolstice = SunCalc.getTimes(new Date(Date.UTC(targetYear - 1, 11, 22)), 0, 0).decSolstice;
-            let date = new Date(decSolstice.getTime() + utcOffset);
-            
-            let newMoonCount = 0;
-            let lunarNewYear = null;
-            
-            while (newMoonCount < 2) {
-                date.setDate(date.getDate() + 1);
-                const moonIllumination = SunCalc.getMoonIllumination(date);
-                if (moonIllumination.phase < 0.01) {
-                    newMoonCount++;
-                    if (newMoonCount === 2) {
-                        lunarNewYear = new Date(date);
-                        const feb4 = new Date(Date.UTC(targetYear, 0, 4 + 31));
-                        if (lunarNewYear > feb4) {
-                            lunarNewYear.setMonth(lunarNewYear.getMonth() - 1);
-                        }
-                    }
+    // Use Beijing coordinates (UTC+8)
+    const lat = 39.9042;
+    const lng = 116.4074;
+    const utcOffset = 8 * 60 * 60 * 1000;
+
+    // Find December solstice in previous year
+    let solsticeDate;
+    for (let day = 20; day <= 23; day++) {
+        const testDate = new Date(Date.UTC(targetYear - 1, 11, day));
+        const times = SunCalc.getTimes(testDate, lat, lng);
+        if (times.decSolstice) {
+            solsticeDate = times.decSolstice;
+            break;
+        }
+    }
+
+    if (!solsticeDate) {
+        throw new Error('Could not find December solstice');
+    }
+
+    // Adjust to UTC+8
+    let date = new Date(solsticeDate.getTime() + utcOffset);
+    
+    // Find subsequent new moons
+    let newMoonCount = 0;
+    let lunarNewYear = null;
+    
+    while (newMoonCount < 2) {
+        date.setDate(date.getDate() + 1);
+        const moonIllumination = SunCalc.getMoonIllumination(date);
+        if (moonIllumination.phase < 0.01) {
+            newMoonCount++;
+            if (newMoonCount === 2) {
+                lunarNewYear = new Date(date);
+                // Adjust for Lichun rule
+                const feb4 = new Date(Date.UTC(targetYear, 0, 4 + 31));
+                if (lunarNewYear > feb4) {
+                    lunarNewYear.setMonth(lunarNewYear.getMonth() - 1);
                 }
             }
-            
-            lunarNewYear.setHours(0, 0, 0, 0);
-            return lunarNewYear;
         }
+    }
+    
+    lunarNewYear.setHours(0, 0, 0, 0);
+    return lunarNewYear;
+}
 
         function getZodiac(inputDate) {
             const utc8Date = new Date(inputDate.getTime() + (8 * 60 * 60 * 1000));
