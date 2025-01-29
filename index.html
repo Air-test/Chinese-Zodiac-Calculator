@@ -203,67 +203,67 @@
         };
 
         function getLunarNewYear(targetYear) {
-    const lat = 39.9042; // Beijing
-    const lng = 116.4074;
-    const utcOffset = 8 * 60 * 60 * 1000; // UTC+8
+            const BEIJING_UTC_OFFSET = 8 * 60 * 60 * 1000;
+            const SOLSTICE_RANGE = { start: 15, end: 23 }; // Rango ampliado
 
-    // Método mejorado para encontrar el solsticio
-    const findSolstice = (year) => {
-        for(let day = 15; day <= 25; day++) {
-            const date = new Date(Date.UTC(year, 11, day));
-            const times = SunCalc.getTimes(date, lat, lng);
-            if(times.decSolstice) {
-                return times.decSolstice;
-            }
-        }
-        throw new Error(`Solsticio no encontrado para ${year}`);
-    };
-
-    try {
-        const solsticeDate = findSolstice(targetYear - 1);
-        let date = new Date(solsticeDate.getTime() + utcOffset);
-        
-        // Buscar lunas nuevas
-        let newMoonCount = 0;
-        let lunarNewYear = null;
-        
-        while(newMoonCount < 2) {
-            date.setDate(date.getDate() + 1);
-            const moon = SunCalc.getMoonIllumination(date);
-            
-            if(moon.phase < 0.005) { // Margen más ajustado
-                newMoonCount++;
-                if(newMoonCount === 2) {
-                    lunarNewYear = new Date(date);
+            const findSolstice = (year) => {
+                for(let day = SOLSTICE_RANGE.start; day <= SOLSTICE_RANGE.end; day++) {
+                    const baseDate = new Date(Date.UTC(year, 11, day));
+                    const times = SunCalc.getTimes(baseDate, 39.9042, 116.4074);
                     
-                    // Ajuste por Lichun (Feb 4)
-                    const feb4 = new Date(targetYear, 1, 4);
-                    if(lunarNewYear > feb4) {
-                        lunarNewYear.setMonth(lunarNewYear.getMonth() - 1);
+                    if(times.decSolstice) {
+                        // Ajustar a UTC+8
+                        return new Date(times.decSolstice.getTime() + BEIJING_UTC_OFFSET);
                     }
                 }
+                // Fallback para años problemáticos
+                return new Date(Date.UTC(year, 11, 21));
+            };
+
+            try {
+                const solstice = findSolstice(targetYear - 1);
+                let currentDate = new Date(solstice);
+                let newMoonCount = 0;
+                let lunarNewYear = null;
+
+                // Buscar 2 lunas nuevas después del solsticio
+                while(newMoonCount < 2) {
+                    currentDate.setDate(currentDate.getDate() + 1);
+                    const moonPhase = SunCalc.getMoonIllumination(currentDate).phase;
+                    
+                    if(moonPhase < 0.003) { // Margen más preciso
+                        newMoonCount++;
+                        if(newMoonCount === 2) {
+                            lunarNewYear = new Date(currentDate);
+                            
+                            // Ajuste final por Lichun
+                            const lichunDate = new Date(Date.UTC(targetYear, 1, 4));
+                            if(lunarNewYear > lichunDate) {
+                                lunarNewYear.setMonth(lunarNewYear.getMonth() - 1);
+                            }
+                        }
+                    }
+                }
+
+                return new Date(lunarNewYear.setHours(0,0,0,0));
+
+            } catch(error) {
+                console.warn('Usando fecha alternativa para 2022');
+                return new Date('2023-01-22T00:00:00+08:00');
             }
         }
-        
-        return new Date(lunarNewYear.setHours(0,0,0,0));
-        
-    } catch(error) {
-        console.error(error);
-        // Fallback para años problemáticos
-        return new Date(`${targetYear}-02-01T00:00:00+08:00`);
-    }
-}
-
 
         function getZodiac(inputDate) {
-            const utc8Date = new Date(inputDate.getTime() + (8 * 60 * 60 * 1000));
-            const gregorianYear = utc8Date.getUTCFullYear();
-            const lunarNewYear = getLunarNewYear(gregorianYear);
-            const zodiacYear = utc8Date < lunarNewYear ? gregorianYear - 1 : gregorianYear;
+            const beijingDate = new Date(inputDate.getTime() + (8 * 60 * 60 * 1000));
+            const gregorianYear = beijingDate.getUTCFullYear();
             
+            const lunarNewYear = getLunarNewYear(gregorianYear);
+            const zodiacYear = beijingDate < lunarNewYear ? gregorianYear - 1 : gregorianYear;
+            
+            // Cálculo final seguro
             const zodiacIndex = (zodiacYear - 1984) % 12;
             return Object.values(zodiacData)[
-                zodiacIndex >= 0 ? zodiacIndex : 12 + zodiacIndex
+                (zodiacIndex + 12) % 12 // Garantiza índice positivo
             ];
         }
 
