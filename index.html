@@ -167,18 +167,18 @@
             'use strict';
             
             const zodiacData = [
-                { animal: 'Rata', chinese: '鼠 (Shǔ)', best: ['Dragón', 'Mono'], good: ['Buey', 'Tigre', 'Conejo', 'Serpiente', 'Perro', 'Cerdo'], avoid: ['Caballo', 'Cabra'] },
-                { animal: 'Buey', chinese: '牛 (Niú)', best: ['Serpiente', 'Gallo'], good: ['Rata', 'Tigre', 'Conejo', 'Dragón', 'Mono', 'Cerdo'], avoid: ['Cabra', 'Caballo', 'Perro'] },
-                { animal: 'Tigre', chinese: '虎 (Hǔ)', best: ['Caballo', 'Perro'], good: ['Rata', 'Buey', 'Conejo', 'Dragón', 'Serpiente', 'Cabra', 'Mono', 'Cerdo'], avoid: ['Mono'] },
-                { animal: 'Conejo', chinese: '兔 (Tù)', best: ['Cabra', 'Cerdo'], good: ['Rata', 'Buey', 'Tigre', 'Dragón', 'Serpiente', 'Perro'], avoid: ['Gallo'] },
-                { animal: 'Dragón', chinese: '龙 (Lóng)', best: ['Rata', 'Mono'], good: ['Tigre', 'Conejo', 'Serpiente', 'Caballo', 'Cabra', 'Gallo', 'Perro', 'Cerdo'], avoid: ['Perro'] },
-                { animal: 'Serpiente', chinese: '蛇 (Shé)', best: ['Buey', 'Gallo'], good: ['Rata', 'Tigre', 'Conejo', 'Dragón', 'Caballo', 'Cabra', 'Perro', 'Cerdo'], avoid: ['Cerdo'] },
-                { animal: 'Caballo', chinese: '马 (Mǎ)', best: ['Tigre', 'Perro'], good: ['Dragón', 'Serpiente', 'Cabra', 'Mono', 'Gallo', 'Cerdo'], avoid: ['Rata', 'Buey', 'Conejo'] },
-                { animal: 'Cabra', chinese: '羊 (Yáng)', best: ['Conejo', 'Cerdo'], good: ['Tigre', 'Dragón', 'Serpiente', 'Caballo', 'Mono', 'Gallo', 'Perro'], avoid: ['Buey', 'Rata'] },
-                { animal: 'Mono', chinese: '猴 (Hóu)', best: ['Rata', 'Dragón'], good: ['Buey', 'Tigre', 'Conejo', 'Serpiente', 'Caballo', 'Cabra', 'Perro', 'Cerdo'], avoid: ['Tigre'] },
-                { animal: 'Gallo', chinese: '鸡 (Jī)', best: ['Buey', 'Serpiente'], good: ['Tigre', 'Conejo', 'Dragón', 'Caballo', 'Cabra', 'Mono', 'Perro', 'Cerdo'], avoid: ['Conejo'] },
-                { animal: 'Perro', chinese: '狗 (Gǒu)', best: ['Tigre', 'Caballo'], good: ['Rata', 'Conejo', 'Dragón', 'Serpiente', 'Cabra', 'Mono', 'Gallo', 'Cerdo'], avoid: ['Dragón', 'Buey', 'Cabra'] },
-                { animal: 'Cerdo', chinese: '猪 (Zhū)', best: ['Conejo', 'Cabra'], good: ['Rata', 'Buey', 'Tigre', 'Dragón', 'Serpiente', 'Mono', 'Gallo', 'Perro'], avoid: ['Serpiente'] }
+                { animal: 'Rata', chinese: '鼠 (Shǔ)', best: ['Dragón', 'Buey', 'Conejo' ], good: ['Mono','Tigre',  'Serpiente', 'Cerdo', 'Perro','Rata'], avoid: ['Caballo', 'Cabra', 'Gallo'] },
+                { animal: 'Buey', chinese: '牛 (Niú)', best: [ 'Mono', 'Gallo','Rata'], good: [ 'Conejo','Serpiente', 'Perro', 'Buey'], avoid: ['Tigre', 'Cabra', 'Caballo', 'Cerdo', 'Dragón'] },
+                { animal: 'Tigre', chinese: '虎 (Hǔ)', best: ['Caballo','Dragón', 'Cerdo'], good: ['Rata', 'Conejo', 'Cabra', 'Perro',  'Gallo'], avoid: ['Mono', 'Tigre', 'Buey',  'Serpiente'] },
+                { animal: 'Conejo', chinese: '兔 (Tù)', best: ['Rata','Cabra', 'Cerdo', 'Perro', 'Mono'], good: [ 'Buey', 'Tigre', 'Conejo', 'Dragón', 'Caballo'], avoid: ['Gallo', 'Serpiente'] },
+                { animal: 'Dragón', chinese: '龙 (Lóng)', best: ['Tigre','Rata', 'Serpiente'], good: [ 'Conejo', 'Caballo', 'Gallo', 'Perro', 'Cerdo',  'Mono'], avoid: ['Perro', 'Cabra', 'Buey'] },
+                { animal: 'Serpiente', chinese: '蛇 (Shé)', best: [ 'Gallo', 'Dragón'], good: ['Buey','Rata', 'Caballo', 'Mono','Perro'], avoid: ['Cerdo', 'Tigre', 'Conejo', 'Cabra', 'Serpiente'] },
+                { animal: 'Caballo', chinese: '马 (Mǎ)', best: ['Tigre', 'Cabra'], good: ['Dragón', 'Serpiente', 'Mono', 'Cerdo', 'Conejo', 'Perro'], avoid: ['Rata', 'Buey', 'Gallo', 'Caballo'] },
+                { animal: 'Cabra', chinese: '羊 (Yáng)', best: ['Conejo', 'Cerdo', 'Caballo'], good: ['Tigre', 'Mono', 'Gallo', 'Cabra'], avoid: ['Buey', 'Rata', 'Dragón', 'Serpiente', 'Perro'] },
+                { animal: 'Mono', chinese: '猴 (Hóu)', best: ['Buey', 'Conejo'], good: ['Serpiente', 'Caballo', 'Cabra', 'Perro', 'Rata', 'Dragón','Mono', 'Dragón'], avoid: ['Tigre', 'Cerdo'] },
+                { animal: 'Gallo', chinese: '鸡 (Jī)', best: ['Buey', 'Serpiente'], good: ['Tigre', 'Dragón',, 'Cabra', 'Mono', 'Cerdo'], avoid: ['Conejo', 'Gallo', 'Perro', 'Conejo' 'Caballo'] },
+                { animal: 'Perro', chinese: '狗 (Gǒu)', best: ['Conejo'], good: ['Rata', 'Serpiente', 'Mono', 'Cerdo', 'Tigre', 'Caballo', 'Perro'], avoid: ['Dragón', 'Buey', 'Cabra', 'Gallo'] },
+                { animal: 'Cerdo', chinese: '猪 (Zhū)', best: ['Tigre','Conejo', 'Cabra'], good: ['Rata',  'Dragón', 'Gallo', 'Perro', 'Cerdo', 'Caballo'], avoid: ['Serpiente', 'Buey', 'Mono'] }
             ];
 
             const STORAGE_KEY = 'chineseNewYearsData';
