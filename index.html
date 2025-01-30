@@ -597,14 +597,48 @@
             };
         };
 
-          // Nueva función para calcular compatibilidad
-        const calculateCompatibility = (zodiac1, zodiac2) => {
-            const compatibilityTypes = {
+          // Función de compatibilidad ÚNICA (eliminar versiones anteriores)
+        const calculateCompatibility = (zodiacA, zodiacB) => {
+            const compatibilityMatrix = {
                 best: 100,
                 good: 75,
                 neutral: 50,
                 avoid: 25
             };
+
+            const getCompatibilityType = (source, target) => {
+                if (source.best.includes(target.animal)) return 'best';
+                if (source.good.includes(target.animal)) return 'good';
+                if (source.avoid.includes(target.animal)) return 'avoid';
+                return 'neutral';
+            };
+
+            const compatAToB = getCompatibilityType(zodiacA, zodiacB);
+            const compatBToA = getCompatibilityType(zodiacB, zodiacA);
+
+            const score = (compatibilityMatrix[compatAToB] + compatibilityMatrix[compatBToA]) / 2;
+            
+            const descriptions = {
+                best: '🌟 Compatibilidad Excelente',
+                good: '✅ Buena Conexión',
+                neutral: '⚖️ Compatibilidad Neutral',
+                avoid: '⚠️ Desafíos Potenciales'
+            };
+
+            const overall = score >= 85 ? 'best' :
+                          score >= 60 ? 'good' :
+                          score >= 40 ? 'neutral' : 'avoid';
+
+            return {
+                score,
+                description: descriptions[overall],
+                details: [
+                    `${zodiacA.animal} → ${zodiacB.animal}: ${compatAToB}`,
+                    `${zodiacB.animal} → ${zodiacA.animal}: ${compatBToA}`
+                ]
+            };
+        };
+
 
             // Verificar compatibilidad en ambas direcciones
             const checkCompatibility = (a, b) => {
@@ -672,49 +706,7 @@
             return zodiacData[dayIndex];
         };
 
-        // Función de compatibilidad mejorada
-        const calculateCompatibility = (zodiacA, zodiacB) => {
-            const compatibilityMatrix = {
-                best: 100,
-                good: 75,
-                neutral: 50,
-                avoid: 25
-            };
-
-            const getCompatibilityType = (source, target) => {
-                if (source.best.includes(target.animal)) return 'best';
-                if (source.good.includes(target.animal)) return 'good';
-                if (source.avoid.includes(target.animal)) return 'avoid';
-                return 'neutral';
-            };
-
-            const compatAToB = getCompatibilityType(zodiacA, zodiacB);
-            const compatBToA = getCompatibilityType(zodiacB, zodiacA);
-
-            const score = (compatibilityMatrix[compatAToB] + compatibilityMatrix[compatBToA]) / 2;
-            
-            const descriptions = {
-                best: '🌟 Compatibilidad Excelente',
-                good: '✅ Buena Conexión',
-                neutral: '⚖️ Compatibilidad Neutral',
-                avoid: '⚠️ Desafíos Potenciales'
-            };
-
-            const overall = score >= 85 ? 'best' :
-                          score >= 60 ? 'good' :
-                          score >= 40 ? 'neutral' : 'avoid';
-
-            return {
-                score,
-                description: descriptions[overall],
-                details: [
-                    `${zodiacA.animal} → ${zodiacB.animal}: ${compatAToB}`,
-                    `${zodiacB.animal} → ${zodiacA.animal}: ${compatBToA}`
-                ]
-            };
-        };
-
-        // Manejador de comparación mejorado
+        // Manejador de comparación actualizado (sin duplicados)
         const handleComparison = () => {
             try {
                 const date1 = document.getElementById('birthdate1').value;
@@ -757,15 +749,18 @@
             }
         };
 
-        // Inicialización final
-        initializeDatabase();
-        document.getElementById('compareBtn').addEventListener('click', handleComparison);
-        document.querySelectorAll('.date-input').forEach(input => {
-            input.addEventListener('change', () => {
-                const resultId = input.id.replace('birthdate', 'result');
-                handleCalculation(input.id, resultId);
+        // Inicialización final (sin duplicados)
+        if(!window.initialized) {
+            initializeDatabase();
+            document.getElementById('compareBtn').addEventListener('click', handleComparison);
+            document.querySelectorAll('.date-input').forEach(input => {
+                input.addEventListener('change', () => {
+                    const resultId = input.id.replace('birthdate', 'result');
+                    handleCalculation(input.id, resultId);
+                });
             });
-        });
-    </script>
+            window.initialized = true;
+        }
+</script>
 </body>
 </html>
