@@ -84,6 +84,67 @@
             background: #fff3f3;
             border-radius: 5px;
         }
+
+.numerology-section {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        margin-top: 2rem;
+    }
+
+    .numerology-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin: 2rem 0;
+    }
+
+    .numerology-card {
+        text-align: center;
+        padding: 1.5rem;
+        border: 1px solid #eee;
+        border-radius: 8px;
+    }
+
+    .number-result {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--primary);
+        margin: 1rem 0;
+    }
+
+    .numerology-analysis {
+        margin-top: 2rem;
+    }
+
+    .analysis-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .percentage-bar {
+        height: 20px;
+        background: #ff4444;
+        border-radius: 10px;
+        overflow: hidden;
+        display: flex;
+        margin: 1rem 0;
+    }
+
+    .favorable {
+        background: #00C851;
+        height: 100%;
+        transition: width 0.5s ease;
+    }
+
+    .unfavorable {
+        background: #ff4444;
+        height: 100%;
+        flex-grow: 1;
+    }
+        
     </style>
 </head>
 <body>
@@ -161,6 +222,47 @@
             </div>
         </div>
     </div>
+
+    <div class="numerology-section">
+    <h2>Numerología</h2>
+    
+    <div class="numerology-grid">
+        <div class="numerology-card">
+            <h3>Día</h3>
+            <div id="dayNumber" class="number-result">-</div>
+            <p id="dayCalculation"></p>
+        </div>
+        
+        <div class="numerology-card">
+            <h3>Fecha</h3>
+            <div id="dateNumber" class="number-result">-</div>
+            <p id="dateCalculation"></p>
+        </div>
+    </div>
+
+    <div class="numerology-analysis">
+        <h3>Porcentaje de Numerología</h3>
+        <div class="analysis-container">
+            <div class="analysis-item">
+                <h4>Fecha 1</h4>
+                <div class="percentage-bar">
+                    <div class="favorable" id="fav1"></div>
+                    <div class="unfavorable" id="unfav1"></div>
+                </div>
+                <p id="numerologyResult1"></p>
+            </div>
+            
+            <div class="analysis-item">
+                <h4>Fecha 2</h4>
+                <div class="percentage-bar">
+                    <div class="favorable" id="fav2"></div>
+                    <div class="unfavorable" id="unfav2"></div>
+                </div>
+                <p id="numerologyResult2"></p>
+            </div>
+        </div>
+    </div>
+</div>
 
     <script>
         (function(){
@@ -578,6 +680,99 @@
                         day2: calculateCompatibility(meetingDayZodiac, zodiacs[1])
                     };
 
+const numerologyData = {
+    'Buey': { best: [1,4], avoid: [5,6] },
+    'Dragón': { best: [1,6,7], avoid: [3,8] },
+    'Serpiente': { best: [2,8,9], avoid: [1,6,7] },
+    'Conejo': { best: [3,4,6], avoid: [1,7,8] },
+    'Rata': { best: [2,3], avoid: [5,9] },
+    'Caballo': { best: [2,3,7], avoid: [1,5,6] },
+    'Mono': { best: [4,9], avoid: [2,7] },
+    'Cabra': { best: [2,7], avoid: [4,9] },
+    'Gallo': { best: [5,7,8], avoid: [1,3,9] },
+    'Cerdo': { best: [2,5,8], avoid: [1,7] },
+    'Perro': { best: [3,4,9], avoid: [1,6,7] },
+    'Tigre': { best: [1,3,4], avoid: [6,7,8] }
+};
+
+function reduceToMasterNumber(num) {
+    const masterNumbers = [11, 22, 33];
+    if (masterNumbers.includes(num)) return num;
+    
+    while(num > 9) {
+        num = num.toString().split('').reduce((a,b) => a + parseInt(b), 0);
+        if (masterNumbers.includes(num)) break;
+    }
+    return num;
+}
+
+function calculateDayNumber(date) {
+    const day = date.getDate();
+    return reduceToMasterNumber(day);
+}
+
+function calculateDateNumber(date) {
+    const digits = [
+        date.getDate().toString().padStart(2, '0'),
+        (date.getMonth() + 1).toString().padStart(2, '0'),
+        date.getFullYear().toString()
+    ].join('').split('').map(Number);
+    
+    return reduceToMasterNumber(digits.reduce((a,b) => a + b, 0));
+}
+
+function calculateNumerology(zodiac, dayNum, dateNum) {
+    const numbers = [dayNum, dateNum];
+    const total = numbers.length;
+    let favorable = 0;
+    
+    numbers.forEach(n => {
+        if (numerologyData[zodiac].best.includes(n)) favorable++;
+        else if (numerologyData[zodiac].avoid.includes(n)) favorable--;
+    });
+    
+    const favorablePercentage = Math.max(0, (favorable / total) * 100);
+    return {
+        favorable: favorablePercentage,
+        unfavorable: 100 - favorablePercentage
+    };
+}
+
+function updateNumerology() {
+    const meetingDate = document.getElementById('meetingDate').value;
+    if (!meetingDate) return;
+
+    const date = new Date(meetingDate);
+    
+    // Calcular números
+    const dayNum = calculateDayNumber(date);
+    const dateNum = calculateDateNumber(date);
+    
+    // Actualizar UI números
+    document.getElementById('dayNumber').textContent = dayNum;
+    document.getElementById('dateNumber').textContent = dateNum;
+    
+    // Calcular porcentajes
+    const zodiac1 = document.getElementById('zodiac-animal1').textContent;
+    const zodiac2 = document.getElementById('zodiac-animal2').textContent;
+    
+    const result1 = calculateNumerology(zodiac1, dayNum, dateNum);
+    const result2 = calculateNumerology(zodiac2, dayNum, dateNum);
+
+    // Actualizar barras
+    document.getElementById('fav1').style.width = `${result1.favorable}%`;
+    document.getElementById('unfav1').style.width = `${result1.unfavorable}%`;
+    document.getElementById('fav2').style.width = `${result2.favorable}%`;
+    document.getElementById('unfav2').style.width = `${result2.unfavorable}%`;
+
+    // Actualizar textos
+    document.getElementById('numerologyResult1').textContent = 
+        `Favorable: ${result1.favorable.toFixed(1)}% | Desfavorable: ${result1.unfavorable.toFixed(1)}%`;
+        
+    document.getElementById('numerologyResult2').textContent = 
+        `Favorable: ${result2.favorable.toFixed(1)}% | Desfavorable: ${result2.unfavorable.toFixed(1)}%`;
+}
+                    
                     Object.entries(compatibilities).forEach(([key, {score, details}]) => {
                         document.getElementById(`meter${key.replace(/^./, c => c.toUpperCase())}`).style.width = `${score}%`;
                         document.getElementById(`details${key.replace(/^./, c => c.toUpperCase())}`).innerHTML = `
@@ -588,6 +783,9 @@
 
                     document.getElementById('comparisonResult').style.display = 'block';
                     document.getElementById('errorMsg').style.display = 'none';
+                    document.getElementById('compareBtn').addEventListener('click', () => {
+    handleComparison();
+    updateNumerology();
 
                 } catch(error) {
                     document.getElementById('errorMsg').textContent = error.message;
@@ -604,6 +802,9 @@
                 window.zodiacSystemInitialized = true;
             }
         })();
+
+
+        
     </script>
 </body>
 </html>
