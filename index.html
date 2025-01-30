@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comparador Zodíaco Chino</title>
+    <title>Comparador Zodíaco Chino Pro</title>
     <style>
-        /* Estilos base existentes */
+        /* Estilos base mejorados */
         :root {
             --primary: #2c3e50;
             --secondary: #e74c3c;
             --accent: #2ecc71;
+            --background: #f8f9fa;
         }
 
-      body {
+        body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             max-width: 1200px;
             margin: 2rem auto;
             padding: 0 1rem;
-            background: #f8f9fa;
+            background: var(--background);
         }
 
         .container {
@@ -26,75 +27,34 @@
             gap: 2rem;
             margin-bottom: 2rem;
         }
-        
-        h1 {
-            color: var(--primary);
-            text-align: center;
-            margin-bottom: 2rem;
-        }
 
         .input-group {
             background: white;
             padding: 2rem;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
         }
 
-        input[type="date"] {
-            flex: 1;
-            padding: 0.8rem;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-        
-.comparison-section {
+        .comparison-section {
             background: white;
             padding: 2rem;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            margin-top: 2rem;
-        }
-        
-        button {
-            background: var(--secondary);
-            color: white;
-            border: none;
-            padding: 0.8rem 2rem;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: opacity 0.3s;
         }
 
-        button:hover {
-            opacity: 0.9;
-        }
-
-        .result {
-            display: none;
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background: #f8f9fa;
-            border-radius: 5px;
-        }
-
-        .zodiac-info {
+        .compatibility-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
 
-        .compatibility {
-            margin-top: 1rem;
-        }
-        
-.compatibility-result {
-            margin-top: 1.5rem;
-            padding: 1rem;
+        .compatibility-card {
+            padding: 1.5rem;
             border-radius: 8px;
-            background: #f0f8ff;
+            background: #f8f9fa;
+            border: 1px solid #eee;
         }
 
         .compatibility-meter {
@@ -110,52 +70,86 @@
             background: var(--accent);
             transition: width 0.5s ease;
         }
-        
-        #errorMsg {
-            color: red;
-            display: none;
-            margin-top: 1rem;
-        }
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 1rem;
-            }
+        .day-compatibility {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #eee;
         }
     </style>
 </head>
 <body>
-    <h1 style="text-align: center; margin-bottom: 2rem;">Comparador de Compatibilidad Zodíaco Chino</h1>
+    <h1 style="text-align: center; margin-bottom: 2rem;">Comparador de Compatibilidad Zodíaco Chino Pro</h1>
     
     <div class="container">
-        <!-- Primera fecha -->
         <div class="input-group">
             <h3>Fecha 1</h3>
             <input type="date" id="birthdate1" class="date-input" required>
             <div class="result" id="result1">
-                <!-- Mantener misma estructura de resultados -->
+                <!-- Contenido de resultados -->
             </div>
         </div>
 
-        <!-- Segunda fecha -->
         <div class="input-group">
             <h3>Fecha 2</h3>
             <input type="date" id="birthdate2" class="date-input" required>
             <div class="result" id="result2">
-                <!-- Mantener misma estructura de resultados -->
+                <!-- Contenido de resultados -->
             </div>
         </div>
     </div>
 
-    <!-- Sección de comparación -->
     <div class="comparison-section">
-        <h2>Análisis de Compatibilidad</h2>
-        <button type="button" id="compareBtn">Calcular Compatibilidad</button>
+        <h2>Análisis Avanzado de Compatibilidad</h2>
+        
+        <div class="input-group" style="margin: 1.5rem 0;">
+            <h3>Fecha de Encuentro</h3>
+            <input type="date" id="meetingDate" required>
+        </div>
+
+        <button type="button" id="compareBtn">Calcular Compatibilidad Completa</button>
+        
         <div id="comparisonResult" style="display: none;">
-            <div class="compatibility-meter">
-                <div class="meter-fill" id="compatibilityMeter"></div>
+            <div class="compatibility-grid">
+                <!-- Sección de compatibilidad anual -->
+                <div class="compatibility-card">
+                    <h4>Compatibilidad Anual con Fecha 1</h4>
+                    <div class="compatibility-meter">
+                        <div class="meter-fill" id="meterYear1"></div>
+                    </div>
+                    <div id="detailsYear1"></div>
+                </div>
+
+                <div class="compatibility-card">
+                    <h4>Compatibilidad Anual con Fecha 2</h4>
+                    <div class="compatibility-meter">
+                        <div class="meter-fill" id="meterYear2"></div>
+                    </div>
+                    <div id="detailsYear2"></div>
+                </div>
+
+                <!-- Sección de compatibilidad diaria -->
+                <div class="day-compatibility">
+                    <h3>Compatibilidad Diaria Específica</h3>
+                    <div class="compatibility-grid">
+                        <div class="compatibility-card">
+                            <h4>Día de Encuentro vs Fecha 1</h4>
+                            <div class="compatibility-meter">
+                                <div class="meter-fill" id="meterDay1"></div>
+                            </div>
+                            <div id="detailsDay1"></div>
+                        </div>
+
+                        <div class="compatibility-card">
+                            <h4>Día de Encuentro vs Fecha 2</h4>
+                            <div class="compatibility-meter">
+                                <div class="meter-fill" id="meterDay2"></div>
+                            </div>
+                            <div id="detailsDay2"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="compatibility-result" id="compatibilityDetails"></div>
         </div>
     </div>
     
@@ -671,45 +665,107 @@
                 alert(error.message);
             }
         };
+        const getDayZodiac = (date) => {
+            const baseDate = new Date(1900, 0, 1); // 1 Enero 1900 fue Rata
+            const diffDays = Math.floor((date - baseDate) / (1000 * 60 * 60 * 24));
+            const dayIndex = (diffDays % 12 + 12) % 12;
+            return zodiacData[dayIndex];
+        };
 
-        // Nuevo manejador para comparación
+        // Función de compatibilidad mejorada
+        const calculateCompatibility = (zodiacA, zodiacB) => {
+            const compatibilityMatrix = {
+                best: 100,
+                good: 75,
+                neutral: 50,
+                avoid: 25
+            };
+
+            const getCompatibilityType = (source, target) => {
+                if (source.best.includes(target.animal)) return 'best';
+                if (source.good.includes(target.animal)) return 'good';
+                if (source.avoid.includes(target.animal)) return 'avoid';
+                return 'neutral';
+            };
+
+            const compatAToB = getCompatibilityType(zodiacA, zodiacB);
+            const compatBToA = getCompatibilityType(zodiacB, zodiacA);
+
+            const score = (compatibilityMatrix[compatAToB] + compatibilityMatrix[compatBToA]) / 2;
+            
+            const descriptions = {
+                best: '🌟 Compatibilidad Excelente',
+                good: '✅ Buena Conexión',
+                neutral: '⚖️ Compatibilidad Neutral',
+                avoid: '⚠️ Desafíos Potenciales'
+            };
+
+            const overall = score >= 85 ? 'best' :
+                          score >= 60 ? 'good' :
+                          score >= 40 ? 'neutral' : 'avoid';
+
+            return {
+                score,
+                description: descriptions[overall],
+                details: [
+                    `${zodiacA.animal} → ${zodiacB.animal}: ${compatAToB}`,
+                    `${zodiacB.animal} → ${zodiacA.animal}: ${compatBToA}`
+                ]
+            };
+        };
+
+        // Manejador de comparación mejorado
         const handleComparison = () => {
             try {
                 const date1 = document.getElementById('birthdate1').value;
                 const date2 = document.getElementById('birthdate2').value;
+                const meetingDate = document.getElementById('meetingDate').value;
                 
-                if(!date1 || !date2) throw new Error('Selecciona ambas fechas');
-                
+                if (!date1 || !date2 || !meetingDate) {
+                    throw new Error('Selecciona todas las fechas requeridas');
+                }
+
                 const zodiac1 = getZodiac(new Date(date1));
                 const zodiac2 = getZodiac(new Date(date2));
-                
-                const compatibility = calculateCompatibility(zodiac1, zodiac2);
-                
-                // Actualizar UI de comparación
-                const comparisonResult = document.getElementById('comparisonResult');
-                const meter = document.getElementById('compatibilityMeter');
-                const details = document.getElementById('compatibilityDetails');
-                
-                meter.style.width = `${compatibility.score}%`;
-                details.innerHTML = `
-                    <h3>${compatibility.description} (${Math.round(compatibility.score)}%)</h3>
-                    <ul>${compatibility.details.map(d => `<li>${d}</li>`).join('')}</ul>
-                `;
-                
-                comparisonResult.style.display = 'block';
+                const meetingZodiacYear = getZodiac(new Date(meetingDate));
+                const meetingZodiacDay = getDayZodiac(new Date(meetingDate));
+
+                // Calcular compatibilidades
+                const compatYear1 = calculateCompatibility(meetingZodiacYear, zodiac1);
+                const compatYear2 = calculateCompatibility(meetingZodiacYear, zodiac2);
+                const compatDay1 = calculateCompatibility(meetingZodiacDay, zodiac1);
+                const compatDay2 = calculateCompatibility(meetingZodiacDay, zodiac2);
+
+                // Actualizar UI
+                const updateCompatibilityUI = (meterId, detailsId, compatibility) => {
+                    document.getElementById(meterId).style.width = `${compatibility.score}%`;
+                    document.getElementById(detailsId).innerHTML = `
+                        <p>${compatibility.description}</p>
+                        <ul>${compatibility.details.map(d => `<li>${d}</li>`).join('')}</ul>
+                    `;
+                };
+
+                updateCompatibilityUI('meterYear1', 'detailsYear1', compatYear1);
+                updateCompatibilityUI('meterYear2', 'detailsYear2', compatYear2);
+                updateCompatibilityUI('meterDay1', 'detailsDay1', compatDay1);
+                updateCompatibilityUI('meterDay2', 'detailsDay2', compatDay2);
+
+                document.getElementById('comparisonResult').style.display = 'block';
 
             } catch(error) {
                 alert(error.message);
             }
         };
 
-        // Event Listeners actualizados
-        document.getElementById('birthdate1').addEventListener('change', () => handleCalculation('birthdate1', 'result1'));
-        document.getElementById('birthdate2').addEventListener('change', () => handleCalculation('birthdate2', 'result2'));
-        document.getElementById('compareBtn').addEventListener('click', handleComparison);
-
-        // Inicialización
+        // Inicialización final
         initializeDatabase();
+        document.getElementById('compareBtn').addEventListener('click', handleComparison);
+        document.querySelectorAll('.date-input').forEach(input => {
+            input.addEventListener('change', () => {
+                const resultId = input.id.replace('birthdate', 'result');
+                handleCalculation(input.id, resultId);
+            });
+        });
     </script>
 </body>
 </html>
