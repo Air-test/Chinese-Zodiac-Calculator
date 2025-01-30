@@ -502,7 +502,7 @@
 
             const getZodiac = (date) => {
                 const year = date.getFullYear();
-                if(year < 1900 || year > 2100) throw new Error('Año fuera de rango');
+                if(year < 1725 || year > 2100) throw new Error('Año fuera de rango');
                 
                 const cnDate = chineseNewYears[year] 
                     ? new Date(chineseNewYears[year]) 
