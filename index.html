@@ -282,6 +282,20 @@
                 { animal: 'Perro', chinese: '狗 (Gǒu)', best: ['Conejo'], good: ['Rata', 'Serpiente', 'Mono', 'Cerdo', 'Tigre', 'Caballo', 'Perro'], avoid: ['Dragón', 'Buey', 'Cabra', 'Gallo'] },
                 { animal: 'Cerdo', chinese: '猪 (Zhū)', best: ['Tigre','Conejo', 'Cabra'], good: ['Rata',  'Dragón', 'Gallo', 'Perro', 'Cerdo', 'Caballo'], avoid: ['Serpiente', 'Buey', 'Mono'] }
             ];
+            const numerologyData = {
+    'Rata': { best: [2,3], avoid: [5,9] },
+    'Buey': { best: [1,4], avoid: [5,6] },
+    'Tigre': { best: [1,3,4], avoid: [6,7,8] },
+    'Conejo': { best: [3,4,6], avoid: [1,7,8] },
+    'Dragón': { best: [1,6,7], avoid: [3,8] },
+    'Serpiente': { best: [2,8,9], avoid: [1,6,7] },
+    'Caballo': { best: [2,3,7], avoid: [1,5,6] },
+    'Cabra': { best: [2,7], avoid: [4,9] },
+    'Mono': { best: [4,9], avoid: [2,7] },
+    'Gallo': { best: [5,7,8], avoid: [1,3,9] },
+    'Perro': { best: [3,4,9], avoid: [1,6,7] },
+    'Cerdo': { best: [2,5,8], avoid: [1,7] }
+};
 
             const STORAGE_KEY = 'chineseNewYearsData';
             let chineseNewYears = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
@@ -595,20 +609,7 @@
                 chineseNewYears = {...presetDates, ...chineseNewYears};
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(chineseNewYears));
             };
-            const numerologyData = {
-    'Rata': { best: [2,3], avoid: [5,9] },
-    'Buey': { best: [1,4], avoid: [5,6] },
-    'Tigre': { best: [1,3,4], avoid: [6,7,8] },
-    'Conejo': { best: [3,4,6], avoid: [1,7,8] },
-    'Dragón': { best: [1,6,7], avoid: [3,8] },
-    'Serpiente': { best: [2,8,9], avoid: [1,6,7] },
-    'Caballo': { best: [2,3,7], avoid: [1,5,6] },
-    'Cabra': { best: [2,7], avoid: [4,9] },
-    'Mono': { best: [4,9], avoid: [2,7] },
-    'Gallo': { best: [5,7,8], avoid: [1,3,9] },
-    'Perro': { best: [3,4,9], avoid: [1,6,7] },
-    'Cerdo': { best: [2,5,8], avoid: [1,7] }
-};
+            
 const estimateChineseNewYear = (year) => {
                 const baseDate = new Date(year, 0, 21);
                 const cycle = (year - 1900) % 19;
@@ -677,7 +678,8 @@ const estimateChineseNewYear = (year) => {
                 }
             };
 
-            const calculateNumerology = (zodiac, dayNum, dateNum) => {
+            // 2. CORRIGE LA FUNCIÓN calculateNumerology PARA USAR numerologyData CORRECTAMENTE
+        const calculateNumerology = (zodiac, dayNum, dateNum) => {
             const numbers = [dayNum, dateNum];
             let favorable = 0;
             
@@ -686,13 +688,13 @@ const estimateChineseNewYear = (year) => {
                 if (numerologyData[zodiac].avoid.includes(n)) favorable--;
             });
             
-            // Asegurar porcentaje entre 0% y 100%
             const favorablePercentage = Math.max(0, Math.min(100, (favorable / 2) * 100));
             return {
                 favorable: favorablePercentage,
                 unfavorable: 100 - favorablePercentage
             };
         };
+    
             const updateNumerology = () => {
             const meetingDate = document.getElementById('meetingDate').value;
             if (!meetingDate) return;
@@ -763,13 +765,15 @@ function calculateDateNumber(date) {
 }
 
                     
-            const handleComparison = () => {
+         // 3. AÑADE VALIDACIÓN DE DATOS EN handleComparison
+        const handleComparison = () => {
             try {
-                const dates = ['birthdate1', 'birthdate2', 'meetingDate']
-                    .map(id => document.getElementById(id).value)
-                    .filter(date => {
-                        if(!date) throw new Error('Todos los campos son requeridos');
-                        return true;
+                const zodiac1 = document.getElementById('zodiac-animal1').textContent.trim();
+                const zodiac2 = document.getElementById('zodiac-animal2').textContent.trim();
+                
+                if (!numerologyData[zodiac1] || !numerologyData[zodiac2]) {
+                    throw new Error('Error: Zodiacos no cargados correctamente. Recarga la página.');
+                }e;
                     });
 
                 const zodiacs = dates.map(date => getZodiac(new Date(date)));
