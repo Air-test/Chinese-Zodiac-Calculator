@@ -644,11 +644,19 @@
 
                 const date = new Date(meetingDate);
                 const numerologyData = {
-                    /* Tus datos de numerología originales */
-                    'Buey': { best: [1,4], avoid: [5,6] },
-                    /* ... (todos los demás datos de numerología) ... */
-                    'Tigre': { best: [1,3,4], avoid: [6,7,8] }
-                };
+    'Buey': { best: [1,4], avoid: [5,6] },
+    'Dragón': { best: [1,6,7], avoid: [3,8] },
+    'Serpiente': { best: [2,8,9], avoid: [1,6,7] },
+    'Conejo': { best: [3,4,6], avoid: [1,7,8] },
+    'Rata': { best: [2,3], avoid: [5,9] },
+    'Caballo': { best: [2,3,7], avoid: [1,5,6] },
+    'Mono': { best: [4,9], avoid: [2,7] },
+    'Cabra': { best: [2,7], avoid: [4,9] },
+    'Gallo': { best: [5,7,8], avoid: [1,3,9] },
+    'Cerdo': { best: [2,5,8], avoid: [1,7] },
+    'Perro': { best: [3,4,9], avoid: [1,6,7] },
+    'Tigre': { best: [1,3,4], avoid: [6,7,8] }
+};
 
                 // Cálculos de numerología (sin cambios)
                 const dayNum = calculateDayNumber(date);
@@ -688,20 +696,7 @@
                 window.zodiacSystemInitialized = true;
             }
 
-const numerologyData = {
-    'Buey': { best: [1,4], avoid: [5,6] },
-    'Dragón': { best: [1,6,7], avoid: [3,8] },
-    'Serpiente': { best: [2,8,9], avoid: [1,6,7] },
-    'Conejo': { best: [3,4,6], avoid: [1,7,8] },
-    'Rata': { best: [2,3], avoid: [5,9] },
-    'Caballo': { best: [2,3,7], avoid: [1,5,6] },
-    'Mono': { best: [4,9], avoid: [2,7] },
-    'Cabra': { best: [2,7], avoid: [4,9] },
-    'Gallo': { best: [5,7,8], avoid: [1,3,9] },
-    'Cerdo': { best: [2,5,8], avoid: [1,7] },
-    'Perro': { best: [3,4,9], avoid: [1,6,7] },
-    'Tigre': { best: [1,3,4], avoid: [6,7,8] }
-};
+
 
 function reduceToMasterNumber(num) {
     const masterNumbers = [11, 22, 33];
