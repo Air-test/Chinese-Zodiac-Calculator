@@ -596,18 +596,18 @@
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(chineseNewYears));
             };
             const numerologyData = {
+    'Rata': { best: [2,3], avoid: [5,9] },
     'Buey': { best: [1,4], avoid: [5,6] },
+    'Tigre': { best: [1,3,4], avoid: [6,7,8] },
+    'Conejo': { best: [3,4,6], avoid: [1,7,8] },
     'Dragón': { best: [1,6,7], avoid: [3,8] },
     'Serpiente': { best: [2,8,9], avoid: [1,6,7] },
-    'Conejo': { best: [3,4,6], avoid: [1,7,8] },
-    'Rata': { best: [2,3], avoid: [5,9] },
     'Caballo': { best: [2,3,7], avoid: [1,5,6] },
-    'Mono': { best: [4,9], avoid: [2,7] },
     'Cabra': { best: [2,7], avoid: [4,9] },
+    'Mono': { best: [4,9], avoid: [2,7] },
     'Gallo': { best: [5,7,8], avoid: [1,3,9] },
-    'Cerdo': { best: [2,5,8], avoid: [1,7] },
     'Perro': { best: [3,4,9], avoid: [1,6,7] },
-    'Tigre': { best: [1,3,4], avoid: [6,7,8] }
+    'Cerdo': { best: [2,5,8], avoid: [1,7] }
 };
 const estimateChineseNewYear = (year) => {
                 const baseDate = new Date(year, 0, 21);
@@ -659,9 +659,12 @@ const estimateChineseNewYear = (year) => {
             };
 
             const updateUI = (resultId, zodiac) => {
-                document.getElementById(`${resultId}-animal`).textContent = zodiac.animal;
-                document.getElementById(`${resultId}-chinese`).textContent = zodiac.chinese;
-            };
+    // Asegurar nombres en español con primera letra mayúscula
+    const formattedName = zodiac.animal.charAt(0).toUpperCase() + zodiac.animal.slice(1).toLowerCase();
+    
+    document.getElementById(`${resultId}-animal`).textContent = formattedName;
+    document.getElementById(`${resultId}-chinese`).textContent = zodiac.chinese;
+};
 
             const handleDateInput = (inputId, resultId) => {
                 try {
@@ -698,14 +701,22 @@ const estimateChineseNewYear = (year) => {
             const dayNum = calculateDayNumber(date);
             const dateNum = calculateDateNumber(date);
             
-            // Obtener nombres exactos del zodiaco
-            const zodiac1 = document.getElementById('zodiac-animal1').textContent.trim();
-            const zodiac2 = document.getElementById('zodiac-animal2').textContent.trim();
+           const zodiac1 = document.getElementById('zodiac-animal1').textContent.trim();
+    const zodiac2 = document.getElementById('zodiac-animal2').textContent.trim();
 
-            // Validar existencia de datos
-            if (!numerologyData[zodiac1] || !numerologyData[zodiac2]) {
-                console.error('Zodiaco no encontrado en numerologyData');
-                return;
+    // Debug: Mostrar nombres en consola
+    console.log("Zodiaco 1:", zodiac1);
+    console.log("Zodiaco 2:", zodiac2);
+    console.log("Claves en numerologyData:", Object.keys(numerologyData));
+
+    if (!numerologyData[zodiac1]) {
+        console.error(`"${zodiac1}" no existe en numerologyData. Opciones válidas:`, Object.keys(numerologyData));
+        return;
+    }
+    if (!numerologyData[zodiac2]) {
+        console.error(`"${zodiac2}" no existe en numerologyData. Opciones válidas:`, Object.keys(numerologyData));
+        return;
+    }
             }
 
             const result1 = calculateNumerology(zodiac1, dayNum, dateNum);
