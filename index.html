@@ -661,45 +661,53 @@
                 }
             };
 
-const handleComparison = () => {
-    try {
-        const dates = ['birthdate1', 'birthdate2', 'meetingDate']
-            .map(id => document.getElementById(id).value)
-            .filter(date => {
-                if(!date) throw new Error('Todos los campos son requeridos');
-                return true;
-            });
+ const handleComparison = () => {
+            try {
+                const dates = ['birthdate1', 'birthdate2', 'meetingDate']
+                    .map(id => document.getElementById(id).value)
+                    .filter(date => {
+                        if(!date) throw new Error('Todos los campos son requeridos');
+                        return true;
+                    });
 
-        const zodiacs = dates.map(date => getZodiac(new Date(date)));
-        const meetingDayZodiac = getDayZodiac(new Date(dates[2]));
+                const zodiacs = dates.map(date => getZodiac(new Date(date)));
+                const meetingDayZodiac = getDayZodiac(new Date(dates[2]));
 
-        const compatibilities = {
-            year1: calculateCompatibility(zodiacs[2], zodiacs[0]),
-            year2: calculateCompatibility(zodiacs[2], zodiacs[1]),
-            day1: calculateCompatibility(meetingDayZodiac, zodiacs[0]),
-            day2: calculateCompatibility(meetingDayZodiac, zodiacs[1])
+                const compatibilities = {
+                    year1: calculateCompatibility(zodiacs[2], zodiacs[0]),
+                    year2: calculateCompatibility(zodiacs[2], zodiacs[1]),
+                    day1: calculateCompatibility(meetingDayZodiac, zodiacs[0]),
+                    day2: calculateCompatibility(meetingDayZodiac, zodiacs[1])
+                };
+
+                Object.entries(compatibilities).forEach(([key, {score, details}]) => {
+                    document.getElementById(`meter${key.replace(/^./, c => c.toUpperCase())}`).style.width = `${score}%`;
+                    document.getElementById(`details${key.replace(/^./, c => c.toUpperCase())}`).innerHTML = `
+                        <p>${score.toFixed(1)}% de compatibilidad</p>
+                        <ul>${details.map(d => `<li>${d}</li>`).join('')}</ul>
+                    `;
+                });
+
+                document.getElementById('comparisonResult').style.display = 'block';
+                document.getElementById('errorMsg').style.display = 'none';
+
+                updateNumerology(); // Actualizar numerología aquí
+
+            } catch(error) {
+                document.getElementById('errorMsg').textContent = error.message;
+                document.getElementById('errorMsg').style.display = 'block';
+            }
         };
 
-        Object.entries(compatibilities).forEach(([key, {score, details}]) => {
-            document.getElementById(`meter${key.replace(/^./, c => c.toUpperCase())}`).style.width = `${score}%`;
-            document.getElementById(`details${key.replace(/^./, c => c.toUpperCase())}`).innerHTML = `
-                <p>${score.toFixed(1)}% de compatibilidad</p>
-                <ul>${details.map(d => `<li>${d}</li>`).join('')}</ul>
-            `;
-        });
-
-        document.getElementById('comparisonResult').style.display = 'block';
-        document.getElementById('errorMsg').style.display = 'none';
-
-        // Llamar a la función de numerología
-        updateNumerology();
-
-    } catch(error) {
-        document.getElementById('errorMsg').textContent = error.message;
-        document.getElementById('errorMsg').style.display = 'block';
-    }
-};
+        if(!window.zodiacSystemInitialized) {
+            initializeDatabase();
             document.getElementById('compareBtn').addEventListener('click', handleComparison);
+            document.querySelectorAll('.date-input').forEach(input => {
+                input.addEventListener('change', e => handleDateInput(e.target.id, e.target.id.replace('birthdate', 'result')));
+            });
+            window.zodiacSystemInitialized = true;
+        }
+    })();
 
 const numerologyData = {
     'Buey': { best: [1,4], avoid: [5,6] },
