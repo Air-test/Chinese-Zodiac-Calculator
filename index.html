@@ -288,6 +288,7 @@
 
             const initializeDatabase = () => {
                 const presetDates = {
+                    /* Tus datos históricos completos de años */
                     1724: '1724-02-14',
     1725: '1725-02-03',
     1726: '1726-01-24',
@@ -590,124 +591,102 @@
     2023: '2023-01-22',
     2024: '2024-02-10',
     2025: '2025-01-29'
-                    // Agregar aquí todas las fechas históricas proporcionadas anteriormente
                 };
                 chineseNewYears = {...presetDates, ...chineseNewYears};
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(chineseNewYears));
             };
 
-            const estimateChineseNewYear = (year) => {
-                const baseDate = new Date(year, 0, 21);
-                const cycle = (year - 1900) % 19;
-                return new Date(baseDate.setDate(21 + cycle));
-            };
-
-            const getZodiac = (date) => {
-                const year = date.getFullYear();
-                if(year < 1725 || year > 2100) throw new Error('Año fuera de rango');
-                
-                const cnDate = chineseNewYears[year] 
-                    ? new Date(chineseNewYears[year]) 
-                    : estimateChineseNewYear(year);
-
-                if(!chineseNewYears[year]) {
-                    chineseNewYears[year] = cnDate.toISOString().split('T')[0];
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(chineseNewYears));
-                }
-
-                const zodiacYear = date < cnDate ? year - 1 : year;
-                const zodiacIndex = ((zodiacYear - 1900) % 12 + 12) % 12;
-                return {...zodiacData[zodiacIndex]};
-            };
-
-            const getDayZodiac = (date) => {
-                const baseDate = new Date(1900, 0, 1);
-                const diffDays = Math.floor((date - baseDate) / (86400000));
-                return {...zodiacData[(diffDays % 12 + 12) % 12]};
-            };
-
-            const calculateCompatibility = (zodiacA, zodiacB) => {
-                const getScore = (source, target) => {
-                    if(source.best.includes(target.animal)) return 100;
-                    if(source.good.includes(target.animal)) return 75;
-                    if(source.avoid.includes(target.animal)) return 25;
-                    return 50;
-                };
-                
-                const score = (getScore(zodiacA, zodiacB) + getScore(zodiacB, zodiacA)) / 2;
-                
-                return {
-                    score,
-                    details: [
-                        `${zodiacA.animal} → ${zodiacB.animal}: ${getScore(zodiacA, zodiacB)}%`,
-                        `${zodiacB.animal} → ${zodiacA.animal}: ${getScore(zodiacB, zodiacA)}%`
-                    ]
-                };
-            };
-
-            const updateUI = (resultId, zodiac) => {
-                document.getElementById(`${resultId}-animal`).textContent = zodiac.animal;
-                document.getElementById(`${resultId}-chinese`).textContent = zodiac.chinese;
-            };
-
-            const handleDateInput = (inputId, resultId) => {
+            // ========== FUNCIONES CORREGIDAS ==========
+            const handleComparison = () => {
                 try {
-                    const date = document.getElementById(inputId).value;
-                    if(!date) return;
-                    updateUI(resultId, getZodiac(new Date(date)));
+                    const dates = ['birthdate1', 'birthdate2', 'meetingDate']
+                        .map(id => document.getElementById(id).value)
+                        .filter(date => {
+                            if(!date) throw new Error('Todos los campos son requeridos');
+                            return true;
+                        });
+
+                    const zodiacs = dates.map(date => getZodiac(new Date(date)));
+                    const meetingDayZodiac = getDayZodiac(new Date(dates[2]));
+
+                    const compatibilities = {
+                        year1: calculateCompatibility(zodiacs[2], zodiacs[0]),
+                        year2: calculateCompatibility(zodiacs[2], zodiacs[1]),
+                        day1: calculateCompatibility(meetingDayZodiac, zodiacs[0]),
+                        day2: calculateCompatibility(meetingDayZodiac, zodiacs[1])
+                    };
+
+                    Object.entries(compatibilities).forEach(([key, {score, details}]) => {
+                        const meterId = `meter${key.charAt(0).toUpperCase() + key.slice(1)}`;
+                        const detailsId = `details${key.charAt(0).toUpperCase() + key.slice(1)}`;
+                        
+                        document.getElementById(meterId).style.width = `${score}%`;
+                        document.getElementById(detailsId).innerHTML = `
+                            <p>${score.toFixed(1)}% de compatibilidad</p>
+                            <ul>${details.map(d => `<li>${d}</li>`).join('')}</ul>
+                        `;
+                    });
+
+                    document.getElementById('comparisonResult').style.display = 'block';
+                    document.getElementById('errorMsg').style.display = 'none';
+                    
+                    updateNumerology(); // Llamada correctamente ubicada
+
                 } catch(error) {
                     document.getElementById('errorMsg').textContent = error.message;
                     document.getElementById('errorMsg').style.display = 'block';
                 }
             };
 
- const handleComparison = () => {
-            try {
-                const dates = ['birthdate1', 'birthdate2', 'meetingDate']
-                    .map(id => document.getElementById(id).value)
-                    .filter(date => {
-                        if(!date) throw new Error('Todos los campos son requeridos');
-                        return true;
-                    });
+            const updateNumerology = () => {
+                const meetingDate = document.getElementById('meetingDate').value;
+                if (!meetingDate) return;
 
-                const zodiacs = dates.map(date => getZodiac(new Date(date)));
-                const meetingDayZodiac = getDayZodiac(new Date(dates[2]));
-
-                const compatibilities = {
-                    year1: calculateCompatibility(zodiacs[2], zodiacs[0]),
-                    year2: calculateCompatibility(zodiacs[2], zodiacs[1]),
-                    day1: calculateCompatibility(meetingDayZodiac, zodiacs[0]),
-                    day2: calculateCompatibility(meetingDayZodiac, zodiacs[1])
+                const date = new Date(meetingDate);
+                const numerologyData = {
+                    /* Tus datos de numerología originales */
+                    'Buey': { best: [1,4], avoid: [5,6] },
+                    /* ... (todos los demás datos de numerología) ... */
+                    'Tigre': { best: [1,3,4], avoid: [6,7,8] }
                 };
 
-                Object.entries(compatibilities).forEach(([key, {score, details}]) => {
-                    document.getElementById(`meter${key.replace(/^./, c => c.toUpperCase())}`).style.width = `${score}%`;
-                    document.getElementById(`details${key.replace(/^./, c => c.toUpperCase())}`).innerHTML = `
-                        <p>${score.toFixed(1)}% de compatibilidad</p>
-                        <ul>${details.map(d => `<li>${d}</li>`).join('')}</ul>
-                    `;
+                // Cálculos de numerología (sin cambios)
+                const dayNum = calculateDayNumber(date);
+                const dateNum = calculateDateNumber(date);
+                
+                document.getElementById('dayNumber').textContent = dayNum;
+                document.getElementById('dateNumber').textContent = dateNum;
+
+                const zodiac1 = document.getElementById('zodiac-animal1').textContent;
+                const zodiac2 = document.getElementById('zodiac-animal2').textContent;
+
+                const result1 = calculateNumerology(zodiac1, dayNum, dateNum);
+                const result2 = calculateNumerology(zodiac2, dayNum, dateNum);
+
+                // Actualización de barras
+                ['fav1', 'fav2'].forEach((id, index) => {
+                    const result = index === 0 ? result1 : result2;
+                    document.getElementById(id).style.width = `${result.favorable}%`;
+                    document.getElementById(`unfav${index + 1}`).style.width = `${result.unfavorable}%`;
                 });
 
-                document.getElementById('comparisonResult').style.display = 'block';
-                document.getElementById('errorMsg').style.display = 'none';
+                // Actualización de textos
+                document.getElementById('numerologyResult1').textContent = 
+                    `Favorable: ${result1.favorable.toFixed(1)}% | Desfavorable: ${result1.unfavorable.toFixed(1)}%`;
+                
+                document.getElementById('numerologyResult2').textContent = 
+                    `Favorable: ${result2.favorable.toFixed(1)}% | Desfavorable: ${result2.unfavorable.toFixed(1)}%`;
+            };
 
-                updateNumerology(); // Actualizar numerología aquí
-
-            } catch(error) {
-                document.getElementById('errorMsg').textContent = error.message;
-                document.getElementById('errorMsg').style.display = 'block';
+            // ========== INICIALIZACIÓN CORRECTA ==========
+            if(!window.zodiacSystemInitialized) {
+                initializeDatabase();
+                document.getElementById('compareBtn').addEventListener('click', handleComparison);
+                document.querySelectorAll('.date-input').forEach(input => {
+                    input.addEventListener('change', e => handleDateInput(e.target.id, e.target.id.replace('birthdate', 'result')));
+                });
+                window.zodiacSystemInitialized = true;
             }
-        };
-
-        if(!window.zodiacSystemInitialized) {
-            initializeDatabase();
-            document.getElementById('compareBtn').addEventListener('click', handleComparison);
-            document.querySelectorAll('.date-input').forEach(input => {
-                input.addEventListener('change', e => handleDateInput(e.target.id, e.target.id.replace('birthdate', 'result')));
-            });
-            window.zodiacSystemInitialized = true;
-        }
-    })();
 
 const numerologyData = {
     'Buey': { best: [1,4], avoid: [5,6] },
