@@ -786,41 +786,6 @@ function calculateNumerology(zodiac, dayNum, dateNum) {
         unfavorable: 100 - favorablePercentage
     };
 }
-
-function updateNumerology() {
-    const meetingDate = document.getElementById('meetingDate').value;
-    if (!meetingDate) return;
-
-    const date = new Date(meetingDate);
-    
-    // Calcular números
-    const dayNum = calculateDayNumber(date);
-    const dateNum = calculateDateNumber(date);
-    
-    // Actualizar UI números
-    document.getElementById('dayNumber').textContent = dayNum;
-    document.getElementById('dateNumber').textContent = dateNum;
-    
-    // Calcular porcentajes
-    const zodiac1 = document.getElementById('zodiac-animal1').textContent;
-    const zodiac2 = document.getElementById('zodiac-animal2').textContent;
-    
-    const result1 = calculateNumerology(zodiac1, dayNum, dateNum);
-    const result2 = calculateNumerology(zodiac2, dayNum, dateNum);
-
-    // Actualizar barras
-    document.getElementById('fav1').style.width = `${result1.favorable}%`;
-    document.getElementById('unfav1').style.width = `${result1.unfavorable}%`;
-    document.getElementById('fav2').style.width = `${result2.favorable}%`;
-    document.getElementById('unfav2').style.width = `${result2.unfavorable}%`;
-
-    // Actualizar textos
-    document.getElementById('numerologyResult1').textContent = 
-        `Favorable: ${result1.favorable.toFixed(1)}% | Desfavorable: ${result1.unfavorable.toFixed(1)}%`;
-        
-    document.getElementById('numerologyResult2').textContent = 
-        `Favorable: ${result2.favorable.toFixed(1)}% | Desfavorable: ${result2.unfavorable.toFixed(1)}%`;
-}
                     
                     Object.entries(compatibilities).forEach(([key, {score, details}]) => {
                         document.getElementById(`meter${key.replace(/^./, c => c.toUpperCase())}`).style.width = `${score}%`;
